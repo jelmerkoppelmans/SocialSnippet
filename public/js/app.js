@@ -11,9 +11,11 @@ function fetchAndRenderShows () {
   $.get('/getShows', function (data) {
     console.log('items: ' + data.length);
 
-    data.forEach(function(v) {
-      console.log(v._source.twitter_hashtag);
+    var options = data.map(function(v) {
+      return $('<option ' + 'value="' + v._source.prid + '">' + v._source.title + ' ' + v._source.published_start_time + '</option>');
     });
+
+    $('#pick-show').html(options);
   });
 }
 
