@@ -3,15 +3,14 @@ const request = require('request');
 const cache = require('../activity/cache');
 
 const postData = {
-  "key": config.npo.key,
-  "filters": {
-    "twitter_hashtag": [],
-    "twitter_account": [],
-    "date": {
-      "from": "2015-11-14"
+  key: config.npo.key,
+  filters: {
+    date: {
+      from: "2015-11-12",
+      to: "2015-11-13"
     }
   },
-  "size": 100
+  size: 100
 };
 
 const options = {
@@ -42,7 +41,7 @@ function _fetchTwitterInfoPage (from) {
 }
 
 function _fetchTwitterInfo () {
-  const cacheKey = cache.getKey("npo_twitterdata", "2015-11-14");
+  const cacheKey = cache.getKey("npo_twitterdata", postData.filters.date.from + postData.filters.date.to);
   const cachedData = cache.get(cacheKey);
 
   if (cachedData) {
@@ -68,13 +67,31 @@ function _fetchTwitterInfo () {
           promises.push(_fetchTwitterInfoPage(i * 100));
         }
 
-        Promise.all(promises).then((values) => {
-          const hits = values.map((value) => { return value.hits.hits });
+        Promise.all(promises)
+          .then((values) => {
+            const hits = values
+              .reduce((previousValue, value) => {
+                return previousValue.concat(value.hits.hits);
+              }, [])
+              .map((value) => {
+                // add twitter info when missing
+                if (value._source.title.toLowerCase() === 'de wereld draait door') {
+                  value._source.twitter_hashtag = '#dwdd';
+                  return value;
+                } else if (value._source.twitter_hashtag) {
+                  return value;
+                } else {
+                  return null;
+                }
+              })
+              .filter((value) => {
+                return value !== null;
+              });
 
-          cache.set(cacheKey, hits);
+            cache.set(cacheKey, hits);
 
-          resolve(hits);
-        });
+            resolve(hits);
+          });
 
       } else {
         reject(new Error('response code: ' + response.statusCode));
@@ -87,8 +104,8 @@ function getTwitterInfo () {
  return _fetchTwitterInfo();
 }
 
-getTwitterInfo()
-  .then((hits) => { console.log(hits); })
-  .catch((error) => { console.log(error.message); });
+//getTwitterInfo()
+//  .then((hits) => { console.log(hits); })
+//  .catch((error) => { console.log(error.message); });
 
 module.exports = getTwitterInfo;
