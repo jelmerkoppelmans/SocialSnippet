@@ -6,7 +6,6 @@ function fetchAndRenderShow(prid, hashtag, startTime, endTime) {
     endTime: endTime
   };
   $.get('/getShow', params, function (data) {
-    $('#show-title').text('Activity for ' + data.title);
     $('#show-activity').html(data.activity);
     $('#show-video').attr('src', data.videoUrl);
 

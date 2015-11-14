@@ -25,10 +25,8 @@ app.get('/getShow', function (req, res) {
   ]).then((answers)=> {
     const activity = answers[0];
     const videoUrl = answers[1];
-    const date = new Date(req.query.startTime);
 
     res.send({
-      title: 'De Wereld Draait Door',
       date: new Date(req.query.startTime),
       activity: activity,
       videoUrl: videoUrl.url
