@@ -1,4 +1,4 @@
-module.export = {
+module.exports = {
   twitter: {
     consumer_key: 'XXX',
     consumer_secret: 'XXX',

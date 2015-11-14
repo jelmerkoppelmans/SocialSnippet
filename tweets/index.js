@@ -5,12 +5,7 @@ const keys = require('../config.js');
 
 const client = new Twitter(keys.twitter);
 
-function fetchTweets (query) {
-  const params = {
-    q: query,
-    result_type: 'recent',
-    count: 100
-  };
+function fetchTweets (params) {
   return new Promise((resolve, reject)=> {
     client.get('search/tweets.json', params, (err, tweets)=> {
       if (err) {
@@ -22,11 +17,41 @@ function fetchTweets (query) {
   });
 }
 
-function filterTweetsByDate (start, end) {
+function fetchTweetsUntil(params, startTime, offsetId) {
+  if (offsetId) {
+    params.max_id = offsetId;
+  }
+  return fetchTweets(params).then((tweets)=> {
+    const lastTweet = tweets[tweets.length - 1];
+
+    if (new Date(lastTweet.created_at) > startTime) {
+      return fetchTweetsUntil(params, startTime, lastTweet.id)
+        .then((nextTweets)=> {
+          return tweets.concat(nextTweets);
+        });
+    }
+    return tweets;
+  });
+}
+
+function fetchTweetsWithinTime (query, startTime, endTime) {
+  const until = new Date(endTime);
+  until.setDate(until.getDate() + 1);
+
+  const params = {
+    q: query,
+    result_type: 'recent',
+    count: 100,
+    until: until.toISOString().substr(0, 10)
+  };
+  return fetchTweetsUntil(params, startTime);
+}
+
+function filterTweetsByDate (startTime, endTime) {
   return (tweets)=> {
     return tweets.filter((tweet)=> {
-      const tweetDate = new Date(tweet.created_at);
-      return tweetDate >= start && tweetDate <= end;
+      const tweetTime = new Date(tweet.created_at);
+      return tweetTime >= startTime && tweetTime <= endTime;
     });
   };
 }
@@ -51,8 +76,8 @@ function countActivity (dateGroups) {
  * @param {Date} endTime
  * @returns {Promise} contains { 'dateStr': 123 }, per minute
  */
-function getTweetActivity(query, startTime, endTime) {
-  return fetchTweets(query)
+function getTweetActivity (query, startTime, endTime) {
+  return fetchTweetsWithinTime(query, startTime, endTime)
     .then(filterTweetsByDate(startTime, endTime))
     .then(groupTweetsByTime)
     .then(countActivity);
@@ -60,3 +85,8 @@ function getTweetActivity(query, startTime, endTime) {
 
 module.exports = getTweetActivity;
 
+
+getTweetActivity('#dwdd',
+  new Date('Fri Nov 13 19:00:00 +0100 2015'),
+  new Date('Fri Nov 13 20:00:00 +0100 2015')
+).then(console.log.bind(console));
