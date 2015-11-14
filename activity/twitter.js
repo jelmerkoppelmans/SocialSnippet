@@ -22,8 +22,7 @@ function fetchTweetsUntil(params, startTime, offsetId) {
   }
   return fetchTweets(params).then((tweets)=> {
     const lastTweet = tweets[tweets.length - 1];
-
-    if (new Date(lastTweet.created_at) > startTime) {
+    if (lastTweet && new Date(lastTweet.created_at) > startTime) {
       return fetchTweetsUntil(params, startTime, lastTweet.id)
         .then((nextTweets)=> {
           return tweets.concat(nextTweets);
