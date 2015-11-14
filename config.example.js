@@ -5,4 +5,7 @@ module.exports = {
     access_token_key: 'XXX',
     access_token_secret: 'XXX'
   },
+  npo: {
+    key: 'XXX'
+  }
 };
