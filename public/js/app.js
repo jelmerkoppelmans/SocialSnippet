@@ -16,7 +16,16 @@ function fetchAndRenderShow(prid, hashtag, startTime, endTime) {
 
 function fetchAndRenderShows () {
   $.get('/getShows', function (data) {
-    var options = data.map(function(v) {
+    var options = data.sort(function(a, b) {
+      if (a._source.title < b._source.title) {
+        return -1;
+      }
+      if (a._source.title > b._source.title) {
+        return 1;
+      }
+      return 0;
+
+    }).map(function(v) {
       return $(
         '<option ' +
           'data-hashtag="'+ v._source.twitter_hashtag +'" ' +
