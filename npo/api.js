@@ -74,6 +74,23 @@ function _fetchTwitterInfo () {
                 return previousValue.concat(value.hits.hits);
               }, [])
               .map((value) => {
+                // format dates and add published_end_time
+                const duration = value._source.published_duration;
+
+                const durationHours = parseInt(duration.substr(2,2));
+                const durationMinutes = parseInt(duration.substr(5,2));
+                const durationSeconds = parseInt(duration.substr(8,2));
+
+                const endTime = new Date(value._source.published_start_time);
+                const starttime = new Date(value._source.published_start_time);
+                endTime.setHours(endTime.getHours() + durationHours);
+                endTime.setMinutes(endTime.getMinutes() + durationMinutes);
+                endTime.setSeconds(endTime.getSeconds() + durationSeconds);
+
+                value._source.published_end_time = endTime;
+                value._source.published_start_time = starttime;
+
+
                 // add twitter info when missing
                 if (value._source.title.toLowerCase() === 'de wereld draait door') {
                   value._source.twitter_hashtag = '#dwdd';
