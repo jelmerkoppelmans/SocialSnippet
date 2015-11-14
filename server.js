@@ -1,10 +1,16 @@
 const path = require('path');
 const express = require('express');
-
-var resolver = require("./resolver/index.js");
+const video = require("./resolver/index.js");
 const npo = require('./npo/api');
 const activity = require('./activity');
 
+
+function getVideoURL(prid) {
+  return new Promise((resolve)=> {
+    console.log(prid)
+    video.getVideoURL(prid, resolve);
+  });
+}
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
@@ -15,13 +21,17 @@ app.get('/getShow', function (req, res) {
       req.query.hashtag,
       new Date(req.query.startTime),
       new Date(req.query.endTime)
-    )
-  ).then((activity)=> {
+    ),
+    getVideoURL(req.query.prid)
+  ).then((answers)=> {
+    const activity = answers[0];
+    const videoUrl = answers[1];
+
     res.send({
       title: 'De Wereld Draait Door',
       date: new Date(req.query.startTime),
       activity: activity,
-      videoUrl: ''
+      videoUrl: videoUrl.url
     });
   });
 });
