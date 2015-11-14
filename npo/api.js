@@ -1,5 +1,6 @@
 const config = require('../config.js');
 const request = require('request');
+const cache = require('../activity/cache');
 
 const postData = {
   "key": config.npo.key,
@@ -41,6 +42,13 @@ function _fetchTwitterInfoPage (from) {
 }
 
 function _fetchTwitterInfo () {
+  const cacheKey = cache.getKey("npo_twitterdata", "2015-11-14");
+  const cachedData = cache.get(cacheKey);
+
+  if (cachedData) {
+    return Promise.resolve(cachedData);
+  }
+
   console.log('fetch');
   var requestOptions = JSON.parse(JSON.stringify(options));
   requestOptions.body = postData;
@@ -62,6 +70,9 @@ function _fetchTwitterInfo () {
 
         Promise.all(promises).then((values) => {
           const hits = values.map((value) => { return value.hits.hits });
+
+          cache.set(cacheKey, hits);
+
           resolve(hits);
         });
 
@@ -76,8 +87,8 @@ function getTwitterInfo () {
  return _fetchTwitterInfo();
 }
 
-//getTwitterInfo()
-//  .then((hits) => { console.log(hits); })
-//  .catch((error) => { console.log(error.message); });
+getTwitterInfo()
+  .then((hits) => { console.log(hits); })
+  .catch((error) => { console.log(error.message); });
 
 module.exports = getTwitterInfo;
