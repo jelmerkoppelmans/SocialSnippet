@@ -6,7 +6,14 @@ function fetchAndRenderShow(prid, hashtag, startTime, endTime) {
     endTime: endTime
   };
   $.get('/getShow', params, function (data) {
-    $('#show-activity').html(data.activity);
+    console.log(data);
+
+    $('#show-title').text('Activity for ' + data.title);
+    $('#show-activity').html(data.activity.map(function(value) {
+      var diff = new Date(value[0]).getTime() - new Date(startTime).getTime();
+      var seconds = Math.abs(diff / 1000);
+      return "<li><a href='" + seconds +"'>at " + (seconds/60) + " minutes</a></li>";
+    }));
     $('#show-video').attr('src', data.videoUrl);
 
     $("#show").show();
@@ -40,6 +47,13 @@ function fetchAndRenderShows () {
     $('#pick-show').html(options);
   });
 }
+
+$('#show-activity').on('click', 'a', function(ev) {
+  var video= $("#show-video")[0];
+  video.currentTime = ev.target.getAttribute('href');
+  video.play();
+  ev.preventDefault();
+});
 
 $("#pick-show").on('change', function(ev) {
   $("#show").hide();
