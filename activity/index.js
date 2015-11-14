@@ -21,13 +21,10 @@ function getHotMinutes (activityPerMinute) {
   const minutes = Object.keys(activityPerMinute).length;
   const tweetsPerMinute = lodash.values(activityPerMinute);
   const totalTweets = tweetsPerMinute.reduce((total, count)=> total + count, 0);
-
   const averageTweetPerMinute = (totalTweets / minutes) * 1.5;
-  const maxTweetsPerMinute = Math.max.apply(Math, tweetsPerMinute);
-  const hotTweetsPerMinute = averageTweetPerMinute * (1 + (averageTweetPerMinute / maxTweetsPerMinute));
 
   const hotMinutes = Object.keys(activityPerMinute).reduce((hotMinutes, timeKey)=> {
-    if (activityPerMinute[timeKey] >= hotTweetsPerMinute) {
+    if (activityPerMinute[timeKey] >= averageTweetPerMinute) {
       hotMinutes.push(new Date(timeKey));
     }
     return hotMinutes;

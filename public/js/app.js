@@ -56,6 +56,7 @@ $('#show-activity').on('click', 'a', function(ev) {
 $("#pick-show").on('change', function(ev) {
   $("#show").hide();
   $("#loader").show();
+  $("#show-video")[0].pause();
 
   var selected = $("option:selected", ev.target);
   fetchAndRenderShow(
