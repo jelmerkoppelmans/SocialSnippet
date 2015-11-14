@@ -6,6 +6,7 @@ const client = new Twitter(keys.twitter);
 
 function fetchTweets (params) {
   return new Promise((resolve, reject)=> {
+    console.log('fetching tweets...', JSON.stringify(params));
     client.get('search/tweets.json', params, (err, tweets)=> {
       if (err) {
         reject(new Error(err));

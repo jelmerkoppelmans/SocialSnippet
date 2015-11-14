@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.13.3",
     "jsonfile": "^2.2.3",
     "lodash": "^3.10.1",
     "request": "^2.65.0",

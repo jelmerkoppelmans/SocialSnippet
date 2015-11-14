@@ -2,22 +2,22 @@ const twitter = require('./twitter');
 const cache = require('./cache');
 const lodash = require('lodash');
 
-function getTwitterActivity(twitterQuery, startTime, endTime) {
-  const cacheKey = cache.getKey(twitterQuery, startTime, endTime);
+function getTwitterActivity (query, startTime, endTime) {
+  const cacheKey = cache.getKey(query, startTime, endTime);
   const cachedData = cache.get(cacheKey);
 
   if (cachedData) {
     return Promise.resolve(cachedData);
   }
 
-  return twitter.getTweetActivity(twitterQuery, startTime, endTime)
+  return twitter.getTweetActivity(query, startTime, endTime)
     .then((activity)=> {
       cache.set(cacheKey, activity);
       return activity;
     });
 }
 
-function getHotMinutes(activityPerMinute) {
+function getHotMinutes (activityPerMinute) {
   const minutes = Object.keys(activityPerMinute).length;
   const tweetsPerMinute = lodash.values(activityPerMinute);
   const totalTweets = tweetsPerMinute.reduce((total, count)=> total + count, 0);
@@ -36,7 +36,7 @@ function getHotMinutes(activityPerMinute) {
   return hotMinutes.reverse();
 }
 
-function getActivityRanges(activityPerMinute) {
+function getActivityRanges (activityPerMinute) {
   const overlap = 2;
   const minutes = getHotMinutes(activityPerMinute);
   const ranges = [];
@@ -58,7 +58,11 @@ function getActivityRanges(activityPerMinute) {
   return ranges;
 }
 
+function getActivity (search, startTime, endTime) {
+  return getTwitterActivity(search, startTime, endTime)
+    .then(getActivityRanges);
+}
+
 module.exports = {
-  getTwitterActivity,
-  getActivityRanges
+  getActivity
 };
