@@ -11,7 +11,7 @@
     <div class="container">
         <h1><img src="./img/tsLogo.svg" height="50" /> Trending Snippet</h1>
         <div class="form-group">
-            <select class="form-control">
+            <select class="form-control" id="pick-show">
                 <optgroup label="De Wereld Draait Door">
                     <option>13-11-2015</option>
                     <option>12-11-2015</option>
@@ -21,18 +21,18 @@
             </select>
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading">Activity for De Wereld Draait Door - 13-11-2015</div>
+            <div class="panel-heading" id="show-title">Activity for De Wereld Draait Door - 13-11-2015</div>
             <div class="panel-body">
-                <ul>
+                <ul id="show-activity">
                     <li><a href="#7">at 7 minutes</a></li>
                     <li><a href="#7">at 20 - 28 minutes</a></li>
                 </ul>
-                <div style="background:#000; height: 500px;"></div>
+                <div id="show-video" style="background:#000; height: 500px;"></div>
             </div>
         </div>
     </div>
 
-    <script src=".js/jquery.min.js"></script>
-    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/app.js"></script>
 </body>
 </html>
