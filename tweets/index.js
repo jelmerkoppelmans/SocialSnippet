@@ -49,14 +49,18 @@ function countActivity (dateGroups) {
   });
 }
 
-const startTime = new Date('Sat Nov 14 12:00:00 +0000 2015');
-const endTime = new Date('Sat Nov 14 13:00:00 +0000 2015');
+/**
+ * @param {String} query
+ * @param {Date} startTime
+ * @param {Date} endTime
+ * @returns {Promise} contains { 'dateStr': 123 }, per minute
+ */
+function getTweetActivity(query, startTime, endTime) {
+  return fetchTweets(query)
+    .then(filterTweetsByDate(startTime, endTime))
+    .then(groupTweetsByTime)
+    .then(countActivity);
+}
 
-fetchTweets('#sinterklaas')
-  .then(filterTweetsByDate(startTime, endTime))
-  .then(groupTweetsByTime)
-  .then(countActivity)
-  .then(console.log.bind(console))
-  .catch((err)=> {
-    console.log(err);
-  });
+module.exports = getTweetActivity;
+
