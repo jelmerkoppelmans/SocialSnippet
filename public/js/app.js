@@ -32,8 +32,8 @@ function fetchAndRenderShows () {
           'data-start="'+ v._source.published_start_time +'" ' +
           'data-end="'+ v._source.published_end_time +'" ' +
           'value="' + v._source.prid +'">' +
-          v._source.title + ' ' +
-          v._source.published_start_time +
+          v._source.title + ' --- ' +
+          new Date(v._source.published_start_time).toLocaleString() +
         '</option>');
     });
 
