@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+const npo = require('./npo/api');
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
@@ -11,6 +12,13 @@ app.get('/getShow', function (req, res) {
     activity: [[new Date(), new Date()]],
     videoUrl: ''
   });
+});
+
+app.get('/getShows', function (req, res) {
+  npo()
+    .then((hits) => {
+      res.send(hits);
+    });
 });
 
 const server = app.listen(3000, function () {

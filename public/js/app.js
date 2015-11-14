@@ -7,6 +7,20 @@ function fetchAndRenderShow(showId) {
   });
 }
 
+function fetchAndRenderShows () {
+  $.get('/getShows', function (data) {
+    console.log('items: ' + data.length);
+
+    data.forEach(function(v) {
+      console.log(v._source.twitter_hashtag);
+    });
+  });
+}
+
 $("#pick-show").on('change', function(ev) {
   fetchAndRenderShow(ev.target.value);
+});
+
+$(document).ready(function () {
+  fetchAndRenderShows();
 });

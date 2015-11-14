@@ -78,7 +78,7 @@ function _fetchTwitterInfo () {
                 if (value._source.title.toLowerCase() === 'de wereld draait door') {
                   value._source.twitter_hashtag = '#dwdd';
                   return value;
-                } else if (value._source.twitter_hashtag || value._source.twitter_account) {
+                } else if (value._source.twitter_hashtag) {
                   return value;
                 } else {
                   return null;
