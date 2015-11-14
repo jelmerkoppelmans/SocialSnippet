@@ -6,17 +6,17 @@ function fetchAndRenderShow(prid, hashtag, startTime, endTime) {
     endTime: endTime
   };
   $.get('/getShow', params, function (data) {
-    console.log(data);
     $('#show-title').text('Activity for ' + data.title);
     $('#show-activity').html(data.activity);
     $('#show-video').attr('src', data.videoUrl);
+
+    $("#show").show();
+    $("#loader").hide();
   });
 }
 
 function fetchAndRenderShows () {
   $.get('/getShows', function (data) {
-    console.log('items: ' + data.length);
-
     var options = data.map(function(v) {
       return $(
         '<option ' +
@@ -34,6 +34,9 @@ function fetchAndRenderShows () {
 }
 
 $("#pick-show").on('change', function(ev) {
+  $("#show").hide();
+  $("#loader").show();
+
   var selected = $("option:selected", ev.target);
   fetchAndRenderShow(
     selected.attr("value"),
