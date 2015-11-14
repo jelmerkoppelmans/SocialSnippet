@@ -1,9 +1,11 @@
+const path = require('path');
 const express = require('express');
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', function (req, res) {
-  res.sendFile('./public/index.html');
+app.get('/getActivityRanges', function (req, res) {
+  res.send({ todo: true });
 });
 
 const server = app.listen(3000, function () {
