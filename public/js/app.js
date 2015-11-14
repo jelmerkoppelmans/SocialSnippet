@@ -1,5 +1,11 @@
-function fetchAndRenderShow(showId) {
-  $.get('/getShow', { showId: showId }, function (data) {
+function fetchAndRenderShow(prid, hashtag, startTime, endTime) {
+  var params = {
+    prid: prid,
+    hashtag: hashtag,
+    startTime: startTime,
+    endTime: endTime
+  };
+  $.get('/getShow', params, function (data) {
     console.log(data);
     $('#show-title').text('Activity for ' + data.title);
     $('#show-activity').html(data.activity);
@@ -12,7 +18,15 @@ function fetchAndRenderShows () {
     console.log('items: ' + data.length);
 
     var options = data.map(function(v) {
-      return $('<option ' + 'value="' + v._source.prid + '">' + v._source.title + ' ' + v._source.published_start_time + '</option>');
+      return $(
+        '<option ' +
+          'data-hashtag="'+ v._source.twitter_hashtag +'" ' +
+          'data-start="'+ v._source.published_start_time +'" ' +
+          'data-end="'+ v._source.published_end_time +'" ' +
+          'value="' + v._source.prid +'">' +
+          v._source.title + ' ' +
+          v._source.published_start_time +
+        '</option>');
     });
 
     $('#pick-show').html(options);
@@ -20,7 +34,13 @@ function fetchAndRenderShows () {
 }
 
 $("#pick-show").on('change', function(ev) {
-  fetchAndRenderShow(ev.target.value);
+  var selected = $("option:selected", ev.target);
+  fetchAndRenderShow(
+    selected.attr("value"),
+    selected.attr("data-hashtag"),
+    selected.attr("data-start"),
+    selected.attr("data-end")
+  );
 });
 
 $(document).ready(function () {
