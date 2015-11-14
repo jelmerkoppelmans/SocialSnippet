@@ -1,5 +1,4 @@
 const Twitter = require('twitter');
-const jsonfile = require('jsonfile');
 const lodash = require('lodash');
 const keys = require('../config.js');
 
@@ -83,10 +82,6 @@ function getTweetActivity (query, startTime, endTime) {
     .then(countActivity);
 }
 
-module.exports = getTweetActivity;
-
-
-getTweetActivity('#dwdd',
-  new Date('Fri Nov 13 19:00:00 +0100 2015'),
-  new Date('Fri Nov 13 20:00:00 +0100 2015')
-).then(console.log.bind(console));
+module.exports = {
+  getTweetActivity
+};
