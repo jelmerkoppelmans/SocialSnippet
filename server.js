@@ -1,8 +1,13 @@
 const path = require('path');
 const express = require('express');
+var resolver = require("./resolver/index.js");
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/getVideoURL/:id', function (req, res){
+	resolver.getVideoURL(req.params.id, res.send.bind(res));
+});
 
 app.get('/getActivityRanges', function (req, res) {
   res.send({ todo: true });
