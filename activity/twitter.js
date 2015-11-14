@@ -65,6 +65,7 @@ function groupTweetsByTime (tweets) {
 
 function countActivity (dateGroups) {
   return lodash.mapValues(dateGroups, (tweets)=> {
+    console.log('Total tweets', tweets.length);
     return tweets.length;
   });
 }

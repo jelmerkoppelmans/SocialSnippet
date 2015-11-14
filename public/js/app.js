@@ -6,13 +6,11 @@ function fetchAndRenderShow(prid, hashtag, startTime, endTime) {
     endTime: endTime
   };
   $.get('/getShow', params, function (data) {
-    console.log(data);
-
-    $('#show-title').text('Activity for ' + data.title);
     $('#show-activity').html(data.activity.map(function(value) {
-      var diff = new Date(value[0]).getTime() - new Date(startTime).getTime();
-      var seconds = Math.abs(diff / 1000);
-      return "<li><a href='" + seconds +"'>at " + (seconds/60) + " minutes</a></li>";
+      var offset = 30;
+      var diff = new Date(value[0]).getTime() - offset - new Date(startTime).getTime();
+      var seconds = Math.max(0, Math.abs(diff / 1000));
+      return "<li><a href='" + seconds +"'>at " + Math.round(seconds/60) + " minutes</a></li>";
     }));
     $('#show-video').attr('src', data.videoUrl);
 
