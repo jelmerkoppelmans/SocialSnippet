@@ -1,7 +1,7 @@
-const http = require('http');
 const config = require('../config.js');
+const request = require('request');
 
-const postData = JSON.stringify({
+const postData = {
   "key": config.npo.key,
   "filters": {
     "twitter_hashtag": [],
@@ -11,51 +11,73 @@ const postData = JSON.stringify({
     }
   },
   "size": 100
-});
-
-const options = {
-  host: 'backstage-api.npo.nl',
-  path: '/v0/gids/search',
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Content-length': postData.length
-  }
 };
 
-function _fetchTwitterInfo () {
+const options = {
+  uri: 'http://backstage-api.npo.nl/v0/gids/search',
+  method: 'POST',
+  json: true
+};
+
+function _fetchTwitterInfoPage (from) {
+  var requestOptions = JSON.parse(JSON.stringify(options));
+  requestOptions.body = postData;
+  requestOptions.body.from = from;
+
   return new Promise((resolve, reject) => {
-    const request = http.request(options, (response) => {
+    request(requestOptions, (err, response, body) => {
+      if (err) {
+        console.log(err.message);
+      }
+
       console.log('Response status code: ' + response.statusCode);
+      if (response.statusCode === 200) {
+        resolve(body);
+      } else {
+        reject(new Error('response code: ' + response.statusCode));
+      }
+    });
+  });
+}
 
-      response.setEncoding('utf-8');
-      var responseBody = '';
+function _fetchTwitterInfo () {
+  console.log('fetch');
+  var requestOptions = JSON.parse(JSON.stringify(options));
+  requestOptions.body = postData;
 
-      response.on('data', (chunk) => {
-        responseBody += chunk;
-      });
+  return new Promise((resolve, reject) => {
+    request(requestOptions, (err, response, body) => {
+      if (err) {
+        console.log(err.message);
+      }
 
-      response.on('end', () => {
-        if (response.statusCode === 200) {
-          resolve(JSON.parse(responseBody));
-        } else {
-          reject(new Error('response code: ' + response.statusCode));
+      console.log('Response status code: ' + response.statusCode);
+      if (response.statusCode === 200) {
+        const pages = Math.ceil(body.hits.total / 100);
+        const promises = [];
+
+        for (var i = 0; i < pages; i++) {
+          promises.push(_fetchTwitterInfoPage(i * 100));
         }
-      });
-    });
 
-    request.on('error', (error) => {
-      console.log('ERROR: ' + error.message);
-      reject(new Error(error.message));
-    });
+        Promise.all(promises).then((values) => {
+          const hits = values.map((value) => { return value.hits.hits });
+          resolve(hits);
+        });
 
-    request.write(postData);
-    request.end();
+      } else {
+        reject(new Error('response code: ' + response.statusCode));
+      }
+    });
   });
 }
 
 function getTwitterInfo () {
  return _fetchTwitterInfo();
 }
+
+//getTwitterInfo()
+//  .then((hits) => { console.log(hits); })
+//  .catch((error) => { console.log(error.message); });
 
 module.exports = getTwitterInfo;
