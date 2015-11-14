@@ -1,13 +1,9 @@
 const Twitter = require('twitter');
 const jsonfile = require('jsonfile');
 const lodash = require('lodash');
+const keys = require('../config.js');
 
-const client = new Twitter({
-  consumer_key: 'vLhMT2r2f7iIxFcTMud3wdKvc',
-  consumer_secret: 'Y2RXSV9DlH0sNIAHvsU5r9O3NDzKbe8choTgQS8VTAUobxDEo3',
-  access_token_key: '164262894-UOL2xM2QiSlAxXohhVINRJs8GYJspKRV6d5EOal4',
-  access_token_secret: 'FXTa8o7QExCIYXpFc7mHU3sXf5mOJVpbBQo2ue4sZAWsq'
-});
+const client = new Twitter(keys.twitter);
 
 function fetchTweets (query) {
   const params = {
